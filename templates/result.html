@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Prediction Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1>Prediction Result</h1>
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Prediction</h5>
+          <p class="card-text">
+            <strong>Churn (exit_status):</strong>
+            {% if result.prediction == 1 %}
+              <span class="text-danger">Yes</span>
+            {% else %}
+              <span class="text-success">No</span>
+            {% endif %}
+          </p>
+          <p class="card-text"><strong>Probability (model):</strong> {{ result.probability | round(3) if result.probability is not none else 'N/A' }}</p>
+        </div>
+      </div>
+
+      <h5>Input summary</h5>
+      <table class="table table-sm">
+        <thead><tr><th>Feature</th><th>Value</th></tr></thead>
+        <tbody>
+        {% for k,v in result.input.items() %}
+          <tr><td>{{k}}</td><td>{{v}}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <a class="btn btn-primary" href="/">Back</a>
+    </div>
+  </body>
+</html>
