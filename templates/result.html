@@ -1,40 +1,90 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Prediction Result</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Result — Customer Churn Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container mt-5">
-      <h1>Prediction Result</h1>
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Prediction</h5>
-          <p class="card-text">
-            <strong>Churn (exit_status):</strong>
-            {% if result.prediction == 1 %}
-              <span class="text-danger">Yes</span>
-            {% else %}
-              <span class="text-success">No</span>
-            {% endif %}
-          </p>
-          <p class="card-text"><strong>Probability (model):</strong> {{ result.probability | round(3) if result.probability is not none else 'N/A' }}</p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <i class="bi bi-graph-up me-2 fs-3"></i>
+          <span>Customer Churn Predictor</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navmenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/predict">Predict</a></li>
+          </ul>
         </div>
       </div>
+    </nav>
 
-      <h5>Input summary</h5>
-      <table class="table table-sm">
-        <thead><tr><th>Feature</th><th>Value</th></tr></thead>
-        <tbody>
-        {% for k,v in result.input.items() %}
-          <tr><td>{{k}}</td><td>{{v}}</td></tr>
-        {% endfor %}
-        </tbody>
-      </table>
+    <main class="mt-5 pt-4">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <!-- Styled result banner -->
+            <div class="p-4 rounded-3 mb-3 text-center bg-light shadow-sm">
+              {% if result.prediction == 1 %}
+                <h3 class="text-danger"><i class="bi bi-emoji-frown-fill me-2"></i>Customer likely to churn</h3>
+                <p class="lead">Model probability: <strong>{{ result.probability | round(3) if result.probability is not none else 'N/A' }}</strong></p>
+              {% else %}
+                <h3 class="text-success"><i class="bi bi-emoji-smile-fill me-2"></i>Customer likely to stay</h3>
+                <p class="lead">Model probability of churn: <strong>{{ result.probability | round(3) if result.probability is not none else 'N/A' }}</strong></p>
+              {% endif %}
+            </div>
 
-      <a class="btn btn-primary" href="/">Back</a>
-    </div>
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">Input summary</h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                      {# Safely get first 5 items: convert dict_items to a list then slice #}
+                      {% for k, v in (result.input.items()|list)[:5] %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{k}}</span><span class="text-muted">{{v}}</span>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                      {# Safely get items 6-10 (indexes 5 to 9): convert to list then slice #}
+                      {% for k, v in (result.input.items()|list)[5:10] %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{k}}</span><span class="text-muted">{{v}}</span>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-end">
+              <a class="btn btn-outline-secondary" href="/predict">Back to form</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="mt-5 py-4 bg-light text-muted">
+      <div class="container d-flex justify-content-between">
+        <div>© Customer Churn Predictor</div>
+        <div class="text-end small">Illustration: "Data analysis" by <a href="https://undraw.co/" target="_blank" rel="noopener">unDraw</a>. Used under unDraw's royalty-free terms.</div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

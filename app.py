@@ -21,7 +21,7 @@ Notes for maintainers:
 """
 import os
 import pickle
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -183,12 +183,19 @@ def preprocess_input(row_dict):
 
 @app.route("/", methods=["GET"])
 def index():
-    # Provide lists for select fields in the form
+    # Landing page (home). The page describes the project and links to the
+    # prediction form. The landing page uses external illustrations (unDraw).
+    return render_template("home.html")
+
+
+@app.route("/predict", methods=["GET"])
+def predict_form():
+    # Serve the enhanced prediction form (GET). The form posts to POST /predict
+    # which performs prediction (existing backend logic).
     return render_template(
-        "index.html",
+        "predict.html",
         countries=PRE["countries"],
         genders=PRE["genders"],
-        feature_order=FEATURE_ORDER,
     )
 
 
@@ -219,6 +226,21 @@ def predict():
     }
 
     return render_template("result.html", result=result)
+
+
+@app.route('/notebook', methods=['GET'])
+def serve_notebook():
+    """Serve the project notebook (CHURN_PREDICTION.ipynb) from the repo root.
+
+    This keeps the notebook accessible from the web UI without requiring
+    external hosting. If the file is missing, return a 404 with a clear message.
+    """
+    nb_name = 'CHURN_PREDICTION.ipynb'
+    nb_path = os.path.join(os.getcwd(), nb_name)
+    if os.path.exists(nb_path):
+        # send_from_directory requires the directory and filename separately
+        return send_from_directory(os.getcwd(), nb_name, as_attachment=False)
+    return (f"Notebook not found at {nb_path}", 404)
 
 
 if __name__ == "__main__":
