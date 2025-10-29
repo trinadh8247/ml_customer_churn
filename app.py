@@ -93,9 +93,13 @@ def build_preprocessors():
     country_map = {v: i for i, v in enumerate(le_country.classes_)}
     gender_map = {v: i for i, v in enumerate(le_gender.classes_)}
 
-    # Keep list of categories for the web form
-    countries = sorted(list(train["country"].unique()))
-    genders = sorted(list(train["gender"].unique()))
+    # Keep list of categories for the web form. We include 'unknown' and
+    # 'Other' as UI fallbacks so users can select them, but we DO NOT add
+    # them to the encoding mapping here (that would change numeric encodings
+    # compared to training). Unseen categories are mapped to an existing
+    # fallback index in encode_category().
+    countries = sorted(list(set(train["country"].unique()) | {"unknown"}))
+    genders = sorted(list(set(train["gender"].unique()) | {"unknown", "Other"}))
 
     return {
         "medians": medians,
@@ -125,14 +129,17 @@ def encode_category(value, mapping, default_key="unknown"):
     This avoids LabelEncoder throwing on unseen categories and mirrors the
     notebook behaviour where unknown countries were set to 'unknown'.
     """
+    # normalize missing/blank values
     if pd.isna(value) or value == "":
         value = default_key
+    # direct hit
     if value in mapping:
         return mapping[value]
-    # fallback to default if present, otherwise first mapping integer
+    # fall back to explicit default if available (e.g., 'unknown')
     if default_key in mapping:
         return mapping[default_key]
-    return list(mapping.values())[0]
+    # last resort: return the first mapping integer (stable fallback)
+    return list(mapping.values())[0] if mapping else 0
 
 
 def preprocess_input(row_dict):

@@ -91,6 +91,13 @@
                           {% for g in genders %}
                           <option value="{{g}}">{{g}}</option>
                           {% endfor %}
+                          {# Provide safe fallback options for users even if they were not present in training data #}
+                          {% if 'Other' not in genders %}
+                          <option value="Other">Other</option>
+                          {% endif %}
+                          {% if 'unknown' not in genders %}
+                          <option value="unknown">unknown</option>
+                          {% endif %}
                         </select>
                       </div>
                     </div>
@@ -132,8 +139,8 @@
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-credit-card-2-front"></i></span>
                         <select name="has_card" class="form-select">
-                          <option value="1">1 (Yes)</option>
-                          <option value="0">0 (No)</option>
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
                         </select>
                       </div>
                     </div>
@@ -143,8 +150,8 @@
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
                         <select name="is_active" class="form-select">
-                          <option value="1">1 (Active)</option>
-                          <option value="0">0 (Inactive)</option>
+                          <option value="1">Active</option>
+                          <option value="0">Inactive</option>
                         </select>
                       </div>
                     </div>
